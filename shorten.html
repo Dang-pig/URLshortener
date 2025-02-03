@@ -18,7 +18,6 @@
         document.getElementById('urlForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const url = document.getElementById('urlInput').value;
-            console.log(url);
 
 
             fetch('/shorten', {
@@ -29,12 +28,9 @@
                 body: url
             })
                 .then(res => {
-                    console.log(res);
                     return res.json();
                 })
                 .then(data => {
-                    console.log(data);
-                    
                     document.getElementById('result').innerHTML = `Shortened URL: <a href="${data.shortenedUrl}" target="_blank">${data.shortenedUrl} </a>`;
                 })
                 .catch(error => console.error('Error:', error));
