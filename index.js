@@ -41,9 +41,9 @@ const Server = http.createServer((req, res) => {
                 const urlID = `/${shorten(url)}`;
                 const shortenedUrl = Host + urlID;
                 urlDatabase[urlID] = url;
-                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-                res.end(JSON.stringify({ shortenedUrl }));
+                res.end(shortenedUrl);
             });
         }
         else {

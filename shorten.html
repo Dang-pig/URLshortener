@@ -27,11 +27,9 @@
                 },
                 body: url
             })
-                .then(res => {
-                    return res.json();
-                })
+                .then(res => res.text())
                 .then(data => {
-                    document.getElementById('result').innerHTML = `Shortened URL: <a href="${data.shortenedUrl}" target="_blank">${data.shortenedUrl} </a>`;
+                    document.getElementById('result').innerHTML = `Shortened URL: <a href="${data}" target="_blank">${data} </a>`;
                 })
                 .catch(error => console.error('Error:', error));
         });
