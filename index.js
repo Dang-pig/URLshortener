@@ -60,7 +60,7 @@ const Server = http.createServer((req, res) => {
         }
         else{
             res.writeHead(404, { 'Content-Type': 'text/html' });
-            fs.createReadStream("./noneexist.html").pipe(res);
+            fs.createReadStream("./404.html").pipe(res);
         }
     }
     return;
