@@ -20,7 +20,7 @@
             const url = document.getElementById('urlInput').value;
 
 
-            fetch('/shorten', {
+            fetch('/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'text/plain'
@@ -29,7 +29,15 @@
             })
                 .then(res => res.text())
                 .then(data => {
-                    document.getElementById('result').innerHTML = `Shortened URL: <a href="${data}" target="_blank">${data} </a>`;
+                    console.log(data);
+                    let result = document.getElementById('result')
+                    if(data.startsWith('!')){
+                        d = data.split(" ");
+                        result.innerHTML = `URL was already shortened: <a href="${location.origin + d[1]}" target="_blank">${location.origin + d[1]} </a>`;
+                        return;
+                    }
+                    else if(data == '#') result.innerHTML = "Oops, that URL is not valid.<br>It may not exist, or inaccessible";
+                    else result.innerHTML = `Shortened URL: <a href="${location.origin + data}" target="_blank">${location.origin + data} </a>`;
                 })
                 .catch(error => console.error('Error:', error));
         });

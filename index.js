@@ -2,48 +2,49 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path'
 
-const Host = "http://localhost:8080";
-
 const urlDatabase = {};
+const revDatabase = {};
 
-const Base = 691n;
-const Mod = [839299365868340213n, 839299365868340207n];
-
-function hashFunction(str, ModId) {
-    let ans = 0n;
-    for (let i = 0; i < str.length; i++) ans = (ans * Base + BigInt(str[i].charCodeAt(0))) % Mod[ModId];
-    return ans;
-}
+let idcount = 0;
 
 function toBase62(num) {
     const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     let result = '';
-    while (num > 0n) {
-        result = chars[Number(num % 62n)] + result;
-        num = num / 62n;
+    while (num > 0) {
+        result = chars[Number(num % 62)] + result;
+        num = Math.floor(num / 62);
     }
 
-    return result.padStart(10, '0');
-}
-
-function shorten(url) {
-    return toBase62(hashFunction(url, 0)) + toBase62(hashFunction(url, 1));
+    return result.padStart(7, '0');
 }
 
 const Server = http.createServer((req, res) => {
-    if (req.url == '/shorten') {
+    console.log(req.url);
+    
+    if (req.url == '/') {
         if (req.method === 'POST') {
-            let body = '';
-            req.on('data', chunk => { body += chunk.toString(); });
+            let url = '';
+            req.on('data', chunk => { url += chunk.toString(); });
 
-            req.on('end', () => {
-                const url = body;
-                const urlID = `/${shorten(url)}`;
-                const shortenedUrl = Host + urlID;
-                urlDatabase[urlID] = url;
+            req.on('end', async () => {
                 res.writeHead(200, { 'Content-Type': 'text/plain' });
+                if(revDatabase[url]){
+                    res.end(`! ${revDatabase[url]}`);
+                    return;
+                }
+                if(!URL.canParse(url)){
+                    res.end("#");
+                    return;
+                }
+                if((await fetch(url).catch(() => {}))?.ok === true){
+                    const urlID = `/${toBase62(idcount++)}`;
+                    const shortenedUrl = urlID;
+                    urlDatabase[urlID] = url;
+                    revDatabase[url] = urlID;
 
-                res.end(shortenedUrl);
+                    res.end(shortenedUrl);
+                }
+                else res.end("#");
             });
         }
         else {
